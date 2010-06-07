@@ -241,6 +241,7 @@ class Sag
    * communications to (ex., dealing with documents).
    * 
    * @param string $db The database's name, as you'd put in the URL.
+   * @throws SagCouchException if database does not exist
    */
   public function setDatabase($db)
   {
@@ -248,6 +249,7 @@ class Sag
       throw new SagException('setDatabase() expected a string.');
 
     $this->db = $db;
+    return $this->get('/');
   }
 
   /**
