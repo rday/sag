@@ -439,6 +439,65 @@ class Sag
     return $this->procPacket('POST', "/{$this->db}/_temp_view", json_encode(array('map'=>$func)));
   }
 
+  /**
+   * PUT's the provided views object in the _design documents section.
+   * http://wiki.apache.org/couchdb/HTTP_view_API#Creating_Views
+   *
+   * @param string $id The name of the view
+   * @param object $views Views object with name and map(opt reduce) functions
+   * @param string $rev Revision to update
+   * @param string $lang Script language, default javascript
+   *
+   * @return mixed
+   */
+  public function update_view($id, $views, $rev=null, $lang='javascript')
+  {
+    if(!$this->db)
+      throw new SagException('No database specified');
+
+    if(!is_string($id))
+      throw new SagException('create_view() needs a string for identification');
+    if(!is_object($views))
+      throw new SagException('create_view() needs a view object');
+
+    $req = new StdClass();
+    $req->_id = '_design/' . $id;
+    if( !is_null($rev) )
+      $req->_rev = $rev;
+    $req->language = $lang;
+    $req->views = $views;
+
+    return $this->procPacket('PUT',"/{$this->db}/{$req->_id}", json_encode($req));
+  }
+
+  /**
+   * PUT's the provided views object in the _design documents section.
+   * http://wiki.apache.org/couchdb/HTTP_view_API#Creating_Views
+   *
+   * @param string $id The name of the view
+   * @param object $views Views object with name and map(opt reduce) functions
+   * @param string $lang Script language, default javascript
+   *
+   * @return mixed
+   */
+  public function create_view($id, $views, $lang='javascript')
+  {
+    if(!$this->db)
+      throw new SagException('No database specified');
+
+    if(!is_string($id))
+      throw new SagException('create_view() needs a string for identification');
+    if(!is_object($views))
+      throw new SagException('create_view() needs a view object');
+
+    $req = new StdClass();
+    $req->_id = '_design/' . $id;
+    $req->language = $lang;
+    $req->views = $views;
+
+    return $this->procPacket('PUT',"/{$this->db}/{$req->_id}", json_encode($req));
+  }
+
 
   // The main driver - does all the socket and protocol work.
   private function procPacket($method, $url, $data = null, $headers = array())
