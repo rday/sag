@@ -421,6 +421,25 @@ class Sag
     return $this->procPacket('POST', "/{$this->db}/_compact".((empty($viewName)) ? '' : "/$viewName"));
   }
 
+  /**
+   * POST's the provided function in the correct temporary view format.
+   *
+   * @param string $func The map function for the temporary view
+   *
+   * @return mixed
+   */
+  public function temp_view($func)
+  {
+    if(!$this->db)
+      throw new SagException('No database specified');
+
+    if(!isset($func) || !is_string($func))
+      throw new SagException('temp_view() needs a string function to return data.');
+
+    return $this->procPacket('POST', "/{$this->db}/_temp_view", json_encode(array('map'=>$func)));
+  }
+
+
   // The main driver - does all the socket and protocol work.
   private function procPacket($method, $url, $data = null, $headers = array())
   {
